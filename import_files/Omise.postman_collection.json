@@ -1,0 +1,1811 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Omise",
+		"_postman_id": "3a9e9729-674d-4b82-9832-ec44f3217310",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Charge - simple create",
+			"description": "",
+			"item": [
+				{
+					"name": "Token - create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"tokenization response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"token object must exist\"] = (jsonData.id !== null);",
+									"",
+									"// Set the token value for later use",
+									"postman.setEnvironmentVariable(\"token_id\", jsonData.id);",
+									"",
+									"tests[\"card token must have a value\"] = (jsonData.card.id !== null);",
+									"",
+									"// Set the card token for later use",
+									"postman.setEnvironmentVariable(\"card_id\", jsonData.card.id);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"public_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{vault_endpoint}}tokens/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"card\": \n\t{\n\t\t\"name\": \"Somchai Prasert\",\n\t\t\"number\": \"4242424242424242\",\n\t\t\"expiration_month\": \"10\",\n\t\t\"expiration_year\": \"2018\",\n\t\t\"security_code\": \"123\",\n\t\t\"city\": \"Bangkok\",\n\t\t\"postal_code\": \"10320\"\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Charge - create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"charge response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"charge is created successfully\"] = (jsonData.status === \"successful\");",
+									"",
+									"tests[\"card created was the one charged\"] = (jsonData.card.id === postman.getEnvironmentVariable(\"card_id\"));",
+									"",
+									"tests[\"card is full charged\"] = (jsonData.capture === true);",
+									"",
+									"tests[\"card is not refunded\"] = (jsonData.refunded === 0);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"secret_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{api_endpoint}}charges/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"amount\": \"100000\",\n  \"currency\": \"thb\",\n  \"card\": \"{{token_id}}\",\n  \"description\": \"\",\n  \"capture\": \"true\",\n  \"return_uri\": \"https://www.omise.co\",\n  \"metadata\": \"\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Charge - authorize only",
+			"description": "",
+			"item": [
+				{
+					"name": "Token - create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"tokenization response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"token object must exist\"] = (jsonData.id !== null);",
+									"",
+									"// Set the token value for later use",
+									"postman.setEnvironmentVariable(\"token_id\", jsonData.id);",
+									"",
+									"tests[\"card token must have a value\"] = (jsonData.card.id !== null);",
+									"",
+									"// Set the card token for later use",
+									"postman.setEnvironmentVariable(\"card_id\", jsonData.card.id);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"public_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{vault_endpoint}}tokens/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"card\": \n\t{\n\t\t\"name\": \"Somchai Prasert\",\n\t\t\"number\": \"4242424242424242\",\n\t\t\"expiration_month\": \"10\",\n\t\t\"expiration_year\": \"2018\",\n\t\t\"security_code\": \"123\",\n\t\t\"city\": \"Bangkok\",\n\t\t\"postal_code\": \"10320\"\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Charge - create Auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"charge response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"charge is created as pending\"] = (jsonData.status === \"pending\");",
+									"",
+									"tests[\"card created was the one authorized\"] = (jsonData.card.id === postman.getEnvironmentVariable(\"card_id\"));",
+									"",
+									"tests[\"card is authorized\"] = (jsonData.authorized === true);",
+									"",
+									"tests[\"card is not captured\"] = (jsonData.capture !== true);",
+									"",
+									"tests[\"card is not refunded\"] = (jsonData.refunded === 0);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"secret_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{api_endpoint}}charges/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"amount\": \"100000\",\n  \"currency\": \"thb\",\n  \"card\": \"{{token_id}}\",\n  \"description\": \"\",\n  \"capture\": \"false\",\n  \"return_uri\": \"https://www.omise.co\",\n  \"metadata\": \"\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Charge - authorize then capture",
+			"description": "",
+			"item": [
+				{
+					"name": "Token - create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"tokenization response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"token object must exist\"] = (jsonData.id !== null);",
+									"",
+									"// Set the token value for later use",
+									"postman.setEnvironmentVariable(\"token_id\", jsonData.id);",
+									"",
+									"tests[\"card token must have a value\"] = (jsonData.card.id !== null);",
+									"",
+									"// Set the card token for later use",
+									"postman.setEnvironmentVariable(\"card_id\", jsonData.card.id);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"public_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{vault_endpoint}}tokens/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"card\": \n\t{\n\t\t\"name\": \"Somchai Prasert\",\n\t\t\"number\": \"4242424242424242\",\n\t\t\"expiration_month\": \"10\",\n\t\t\"expiration_year\": \"2018\",\n\t\t\"security_code\": \"123\",\n\t\t\"city\": \"Bangkok\",\n\t\t\"postal_code\": \"10320\"\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Charge - create auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"charge response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"charge is created as pending\"] = (jsonData.status === \"pending\");",
+									"",
+									"tests[\"card created was the one authorized\"] = (jsonData.card.id === postman.getEnvironmentVariable(\"card_id\"));",
+									"",
+									"tests[\"card is authorized\"] = (jsonData.authorized === true);",
+									"",
+									"tests[\"card is not captured\"] = (jsonData.capture !== true);",
+									"",
+									"tests[\"card is not refunded\"] = (jsonData.refunded === 0);",
+									"",
+									"// Set environment variable",
+									"postman.setEnvironmentVariable(\"charge_id\", jsonData.id);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"secret_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{api_endpoint}}charges/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"amount\": \"100000\",\n  \"currency\": \"thb\",\n  \"card\": \"{{token_id}}\",\n  \"description\": \"\",\n  \"capture\": \"false\",\n  \"return_uri\": \"https://www.omise.co\",\n  \"metadata\": \"\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Charge - capture",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"charge response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"charge is charged successfully\"] = (jsonData.status === \"successful\");",
+									"",
+									"tests[\"card captured was the one authorized\"] = (jsonData.card.id === postman.getEnvironmentVariable(\"card_id\"));",
+									"",
+									"tests[\"card is authorized\"] = (jsonData.authorized === true);",
+									"",
+									"//tests[\"card is captured\"] = (jsonData.capture === true);",
+									"",
+									"tests[\"card is not refunded\"] = (jsonData.refunded === 0);"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"secret_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{api_endpoint}}charges/{{charge_id}}/capture/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Charge - reverse (if only authorized)",
+			"description": "This shows how to reverse a charge that has been authorized. You cannot reverse a charge that has been captured.",
+			"item": [
+				{
+					"name": "Token - create copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"tokenization response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"token object must exist\"] = (jsonData.id !== null);",
+									"",
+									"// Set the token value for later use",
+									"postman.setEnvironmentVariable(\"token_id\", jsonData.id);",
+									"",
+									"tests[\"card token must have a value\"] = (jsonData.card.id !== null);",
+									"",
+									"// Set the card token for later use",
+									"postman.setEnvironmentVariable(\"card_id\", jsonData.card.id);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"public_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{vault_endpoint}}tokens/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"card\": \n\t{\n\t\t\"name\": \"Somchai Prasert\",\n\t\t\"number\": \"4242424242424242\",\n\t\t\"expiration_month\": \"10\",\n\t\t\"expiration_year\": \"2018\",\n\t\t\"security_code\": \"123\",\n\t\t\"city\": \"Bangkok\",\n\t\t\"postal_code\": \"10320\"\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Charge - create auth copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"charge response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"charge is created as pending\"] = (jsonData.status === \"pending\");",
+									"",
+									"tests[\"card created was the one authorized\"] = (jsonData.card.id === postman.getEnvironmentVariable(\"card_id\"));",
+									"",
+									"tests[\"card is authorized\"] = (jsonData.authorized === true);",
+									"",
+									"tests[\"card is not captured\"] = (jsonData.capture !== true);",
+									"",
+									"tests[\"card is not reversed\"] = (jsonData.reversed !== true);",
+									"",
+									"// Set environment variable",
+									"postman.setEnvironmentVariable(\"charge_id\", jsonData.id);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"secret_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{api_endpoint}}charges/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"amount\": \"100000\",\n  \"currency\": \"thb\",\n  \"card\": \"{{token_id}}\",\n  \"description\": \"\",\n  \"capture\": \"false\",\n  \"return_uri\": \"https://www.omise.co\",\n  \"metadata\": \"\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Charge - reverse",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"charge response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"charge is reverse successfully\"] = (jsonData.status === \"reversed\");",
+									"",
+									"tests[\"card captured was the one authorized\"] = (jsonData.card.id === postman.getEnvironmentVariable(\"card_id\"));",
+									"",
+									"tests[\"card is authorized\"] = (jsonData.authorized === true);",
+									"",
+									"tests[\"card is not captured\"] = (jsonData.capture === false);",
+									"",
+									"tests[\"card is reversed\"] = (jsonData.reversed === true);"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"secret_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{api_endpoint}}charges/{{charge_id}}/reverse/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Charges - receive",
+			"description": "",
+			"item": [
+				{
+					"name": "Charge - retrieve individual",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"charge response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"charge exists\"] = (jsonData.id !== null);",
+									"",
+									"tests[\"card has a card attached\"] = (jsonData.card.id !== null);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"secret_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{api_endpoint}}charges/{{charge_id}}/",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Charge - retrieve all",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"charge response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"charge list exists\"] = (jsonData.object === \"list\");",
+									"",
+									"tests[\"there is at least 1 charge\"] = (jsonData.total > 0);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"secret_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{api_endpoint}}charges/",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Token - check",
+			"description": "",
+			"item": [
+				{
+					"name": "Token - create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"tokenization response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"token object must exist\"] = (jsonData.id !== null);",
+									"",
+									"// Set the token value for later use",
+									"postman.setEnvironmentVariable(\"token_id\", jsonData.id);",
+									"",
+									"tests[\"card token must have a value\"] = (jsonData.card.id !== null);",
+									"",
+									"// Set the card token for later use",
+									"postman.setEnvironmentVariable(\"card_id\", jsonData.card.id);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"public_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{vault_endpoint}}tokens/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"card\": \n\t{\n\t\t\"name\": \"Somchai Prasert\",\n\t\t\"number\": \"4242424242424242\",\n\t\t\"expiration_month\": \"10\",\n\t\t\"expiration_year\": \"2018\",\n\t\t\"security_code\": \"123\",\n\t\t\"city\": \"Bangkok\",\n\t\t\"postal_code\": \"10320\"\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Token - retrieve",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"token response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"token object must exist\"] = (jsonData.id !== null);",
+									"",
+									"tests[\"token id must be the same\"] = (jsonData.id === postman.getEnvironmentVariable(\"token_id\"));",
+									"",
+									"tests[\"card token must have a value\"] = (jsonData.card.id !== null);",
+									"",
+									"tests[\"card token id must be the same\"] = (jsonData.card.id === postman.getEnvironmentVariable(\"card_id\"));",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"public_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{vault_endpoint}}tokens/{{token_id}}",
+						"method": "GET",
+						"header": [
+							{
+								"description": "",
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"description": "",
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"description": "",
+								"key": "Authorization",
+								"value": "Basic {{authorization}}"
+							}
+						],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Customer - store card on file",
+			"description": "",
+			"item": [
+				{
+					"name": "Token - create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"tokenization response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"token object must exist\"] = (jsonData.id !== null);",
+									"",
+									"// Set the token value for later use",
+									"postman.setEnvironmentVariable(\"token_id\", jsonData.id);",
+									"",
+									"tests[\"card token must have a value\"] = (jsonData.card.id !== null);",
+									"",
+									"// Set the card token for later use",
+									"postman.setEnvironmentVariable(\"card_id\", jsonData.card.id);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"public_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{vault_endpoint}}tokens/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"card\": \n\t{\n\t\t\"name\": \"Somchai Prasert\",\n\t\t\"number\": \"4242424242424242\",\n\t\t\"expiration_month\": \"10\",\n\t\t\"expiration_year\": \"2018\",\n\t\t\"security_code\": \"123\",\n\t\t\"city\": \"Bangkok\",\n\t\t\"postal_code\": \"10320\"\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Customer - create & attach card",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"customer response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"customer object must exist\"] = (jsonData.id !== null);",
+									"",
+									"// Set the customer token value for later use",
+									"postman.setEnvironmentVariable(\"customer_id\", jsonData.id);",
+									"",
+									"tests[\"customer value must be set\"] = (jsonData.id === postman.getEnvironmentVariable(\"customer_id\"));",
+									"",
+									"tests[\"card must be attached as default\"] = (jsonData.default_card === postman.getEnvironmentVariable(\"card_id\"));",
+									"",
+									"var lastCard = (jsonData.cards.total) - 1;",
+									"",
+									"tests[\"card must be added to the list\"] = (jsonData.cards.data[lastCard].id === postman.getEnvironmentVariable(\"card_id\"));",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"secret_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{api_endpoint}}customers",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"description\": \"Somchai Prasert\",\n  \"email\": \"somchaiprasert@example.com\",\n  \"card\": \"{{token_id}}\",\n  \"meta\": \"\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Customer - attach 2nd card on file",
+			"description": "",
+			"item": [
+				{
+					"name": "Token - create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"tokenization response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"token object must exist\"] = (jsonData.id !== null);",
+									"",
+									"// Set the token value for later use",
+									"postman.setEnvironmentVariable(\"token_id\", jsonData.id);",
+									"",
+									"tests[\"card token must have a value\"] = (jsonData.card.id !== null);",
+									"",
+									"// Set the card token for later use",
+									"postman.setEnvironmentVariable(\"card_id\", jsonData.card.id);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"public_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{vault_endpoint}}tokens/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"card\": \n\t{\n\t\t\"name\": \"Somchai Prasert\",\n\t\t\"number\": \"4242424242424242\",\n\t\t\"expiration_month\": \"10\",\n\t\t\"expiration_year\": \"2018\",\n\t\t\"security_code\": \"123\",\n\t\t\"city\": \"Bangkok\",\n\t\t\"postal_code\": \"10320\"\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Customer - create & attach card",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"customer response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"customer object must exist\"] = (jsonData.id !== null);",
+									"",
+									"// Set the customer token value for later use",
+									"postman.setEnvironmentVariable(\"customer_id\", jsonData.id);",
+									"",
+									"tests[\"customer value must be set\"] = (jsonData.id === postman.getEnvironmentVariable(\"customer_id\"));",
+									"",
+									"tests[\"card must be attached as default\"] = (jsonData.default_card === postman.getEnvironmentVariable(\"card_id\"));",
+									"",
+									"var lastCard = (jsonData.cards.total) - 1;",
+									"",
+									"tests[\"card must be added to the list\"] = (jsonData.cards.data[lastCard].id === postman.getEnvironmentVariable(\"card_id\"));",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"secret_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{api_endpoint}}customers",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"description\": \"Somchai Prasert\",\n  \"email\": \"somchaiprasert@example.com\",\n  \"card\": \"{{token_id}}\",\n  \"meta\": \"\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Token - create 2nd",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"tokenization response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"token object must exist\"] = (jsonData.id !== null);",
+									"",
+									"// Set the token value for later use",
+									"postman.setEnvironmentVariable(\"token_id\", jsonData.id);",
+									"",
+									"tests[\"card token must have a value\"] = (jsonData.card.id !== null);",
+									"",
+									"// Set the card token for later use",
+									"postman.setEnvironmentVariable(\"card_id\", jsonData.card.id);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"public_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{vault_endpoint}}tokens/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"card\": \n\t{\n\t\t\"name\": \"Somchai Prasert\",\n\t\t\"number\": \"4242424242424242\",\n\t\t\"expiration_month\": \"10\",\n\t\t\"expiration_year\": \"2018\",\n\t\t\"security_code\": \"123\",\n\t\t\"city\": \"Bangkok\",\n\t\t\"postal_code\": \"10320\"\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Customer - attach 2nd card",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"customer response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"customer object must exist\"] = (jsonData.id !== null);",
+									"",
+									"// Set the customer token value for later use",
+									"postman.setEnvironmentVariable(\"customer_id\", jsonData.id);",
+									"",
+									"tests[\"customer value must be set\"] = (jsonData.id === postman.getEnvironmentVariable(\"customer_id\"));",
+									"",
+									"tests[\"card must NOT be attached as default\"] = (jsonData.default_card !== postman.getEnvironmentVariable(\"card_id\"));",
+									"",
+									"tests[\"total number of cards must be 2\"] = (jsonData.cards.total === 2);",
+									"",
+									"var lastCard = (jsonData.cards.total) - 1;",
+									"",
+									"tests[\"card must be added to the end of the list\"] = (jsonData.cards.data[lastCard].id === postman.getEnvironmentVariable(\"card_id\"));",
+									"",
+									"tests[\"fingerprints of both cards must be the same\"] = (jsonData.cards.data[0].fingerprint === jsonData.cards.data[1].fingerprint);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"secret_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{api_endpoint}}customers/{{customer_id}}",
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"card\": \"{{token_id}}\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Customer - charge card on file",
+			"description": "",
+			"item": [
+				{
+					"name": "Token - create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"tokenization response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"token object must exist\"] = (jsonData.id !== null);",
+									"",
+									"// Set the token value for later use",
+									"postman.setEnvironmentVariable(\"token_id\", jsonData.id);",
+									"",
+									"tests[\"card token must have a value\"] = (jsonData.card.id !== null);",
+									"",
+									"// Set the card token for later use",
+									"postman.setEnvironmentVariable(\"card_id\", jsonData.card.id);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"public_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{vault_endpoint}}tokens/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"card\": \n\t{\n\t\t\"name\": \"Somchai Prasert\",\n\t\t\"number\": \"4242424242424242\",\n\t\t\"expiration_month\": \"10\",\n\t\t\"expiration_year\": \"2018\",\n\t\t\"security_code\": \"123\",\n\t\t\"city\": \"Bangkok\",\n\t\t\"postal_code\": \"10320\"\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Customer - create & attach card",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"customer response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"customer object must exist\"] = (jsonData.id !== null);",
+									"",
+									"// Set the customer token value for later use",
+									"postman.setEnvironmentVariable(\"customer_id\", jsonData.id);",
+									"",
+									"tests[\"customer value must be set\"] = (jsonData.id === postman.getEnvironmentVariable(\"customer_id\"));",
+									"",
+									"tests[\"card must be attached as default\"] = (jsonData.default_card === postman.getEnvironmentVariable(\"card_id\"));",
+									"",
+									"var lastCard = (jsonData.cards.total) - 1;",
+									"",
+									"tests[\"card must be added to the list\"] = (jsonData.cards.data[lastCard].id === postman.getEnvironmentVariable(\"card_id\"));",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"secret_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{api_endpoint}}customers",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"description\": \"Somchai Prasert\",\n  \"email\": \"somchaiprasert@example.com\",\n  \"card\": \"{{token_id}}\",\n  \"meta\": \"\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Charge - customer with default card",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"charge response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"charge is created successfully\"] = (jsonData.status === \"successful\");",
+									"",
+									"tests[\"card created was the one charged\"] = (jsonData.card.id === postman.getEnvironmentVariable(\"card_id\"));",
+									"",
+									"tests[\"card is full charged\"] = (jsonData.capture === true);",
+									"",
+									"tests[\"card is not refunded\"] = (jsonData.refunded === 0);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"secret_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "https://api.omise.co/charges",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"amount\": \"100000\",\n  \"currency\": \"thb\",\n  \"customer\": \"{{customer_id}}\",\n  \"description\": \"\",\n  \"capture\": \"true\",\n  \"metadata\": \"\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Token - create copy 2nd",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"tokenization response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"token object must exist\"] = (jsonData.id !== null);",
+									"",
+									"// Set the token value for later use",
+									"postman.setEnvironmentVariable(\"token_id\", jsonData.id);",
+									"",
+									"tests[\"card token must have a value\"] = (jsonData.card.id !== null);",
+									"",
+									"// Set the card token for later use",
+									"postman.setEnvironmentVariable(\"card_id\", jsonData.card.id);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"public_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{vault_endpoint}}tokens/",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"card\": \n\t{\n\t\t\"name\": \"Somchai Prasert\",\n\t\t\"number\": \"4242424242424242\",\n\t\t\"expiration_month\": \"10\",\n\t\t\"expiration_year\": \"2018\",\n\t\t\"security_code\": \"123\",\n\t\t\"city\": \"Bangkok\",\n\t\t\"postal_code\": \"10320\"\n\t}\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Customer - attach 2nd card",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"customer response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"customer object must exist\"] = (jsonData.id !== null);",
+									"",
+									"// Set the customer token value for later use",
+									"postman.setEnvironmentVariable(\"customer_id\", jsonData.id);",
+									"",
+									"tests[\"customer value must be set\"] = (jsonData.id === postman.getEnvironmentVariable(\"customer_id\"));",
+									"",
+									"tests[\"card must NOT be attached as default\"] = (jsonData.default_card !== postman.getEnvironmentVariable(\"card_id\"));",
+									"",
+									"tests[\"total number of cards must be 2\"] = (jsonData.cards.total === 2);",
+									"",
+									"var lastCard = (jsonData.cards.total) - 1;",
+									"",
+									"tests[\"card must be added to the end of the list\"] = (jsonData.cards.data[lastCard].id === postman.getEnvironmentVariable(\"card_id\"));",
+									"",
+									"tests[\"fingerprints of both cards must be the same\"] = (jsonData.cards.data[0].fingerprint === jsonData.cards.data[1].fingerprint);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"secret_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{api_endpoint}}customers/{{customer_id}}",
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"card\": \"{{token_id}}\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Charge - customer with specific card",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Run tests",
+									"tests[\"charge response status must be 200\"] = (responseCode.code === 200);",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"tests[\"charge is created successfully\"] = (jsonData.status === \"successful\");",
+									"",
+									"tests[\"card created was the one charged\"] = (jsonData.card.id === postman.getEnvironmentVariable(\"card_id\"));",
+									"",
+									"tests[\"card is full charged\"] = (jsonData.capture === true);",
+									"",
+									"tests[\"card is not refunded\"] = (jsonData.refunded === 0);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// Set the Authorization Header - needs to be a Base64 encoding of the API Key",
+									"var apikey = postman.getEnvironmentVariable(\"secret_api_key\");",
+									"postman.setEnvironmentVariable(\"authorization\", btoa(apikey));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "https://api.omise.co/charges",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							},
+							{
+								"key": "Authorization",
+								"value": "Basic {{authorization}}",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"amount\": \"100000\",\n  \"currency\": \"thb\",\n  \"customer\": \"{{customer_id}}\",\n  \"card\": \"{{card_id}}\",\n  \"description\": \"\",\n  \"capture\": \"true\",\n  \"metadata\": \"\"\n}"
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
